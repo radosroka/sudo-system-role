@@ -60,7 +60,7 @@ User_Alias    {{ ua.name }} = {% for user in ua.users %}{% if not loop.last %}{{
 {% endif %}
 {% endif %}
 {% if item.user_specifications is defined %}
-{% if item.user_specifications | json_query('[?!type]') | flatten | length > 0 %}
+{% if item.user_specifications | selectattr('type', 'undefined') | flatten | length > 0 %}
 # User specifications
 {% for spec in item.user_specifications %}
 {% if spec.type is undefined %}
@@ -71,7 +71,7 @@ User_Alias    {{ ua.name }} = {% for user in ua.users %}{% if not loop.last %}{{
 {% endif %}
 
 {% endif %}
-{% if item.user_specifications | json_query('[*].defaults') | flatten | length > 0 %}
+{% if item.user_specifications | selectattr('defaults', 'defined') | map(attribute='defaults') | flatten | length > 0 %}
 # Default override specifications
 {% for spec in item.user_specifications %}
 {% if spec.type is defined %}

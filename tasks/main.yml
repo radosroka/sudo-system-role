@@ -1,12 +1,4 @@
 ---
-- name: Define root group
-  vars:
-    distribution_groups:
-      MacOSX: wheel
-  set_fact:
-    sudoers_root_group: "{{ distribution_groups[ansible_distribution] | default('root') }}"
-  when: sudoers_root_group is not defined
-
 - name: "Ensure sudo is installed"
   package:
     name: "sudo"
@@ -14,16 +6,16 @@
   retries: "3"
   register: "sudo_installed"
   until: "sudo_installed is succeeded"
-  when: ansible_distribution != 'MacOSX'
-  become: True
+ # become: True
 
 - name: "Set include directories variable"
   set_fact:
-    sudoers_include_dirs: "{{ sudoers_files | json_query('[*].include_directories') | flatten }}"
+    sudoers_include_dirs: "{{ sudoers_files | selectattr('include_directories', 'defined') | map(attribute='include_directories') | flatten }}"
 
 - name: "Set sudoer file paths variable"
   set_fact:
-    sudoers_file_paths: "{{ sudoers_files | json_query('[*].path') | flatten }}"
+    sudoers_file_paths: "{{ sudoers_files | selectattr('path', 'defined') |
+      map(attribute='path') | flatten }}"
 
 - name: "Display all sudoers include directories"
   debug:
@@ -39,11 +31,11 @@
   file:
     path: "{{ item }}"
     owner: "root"
-    group: "{{ sudoers_root_group }}"
+    group: "root"
     mode: "0750"
     state: "directory"
   with_items: "{{ sudoers_include_dirs }}"
-  become: True
+#  become: True
   when: "sudoers_include_dirs | length > 0"
 
 # We want to pull the remote sudoer files to the ansible control node
@@ -54,7 +46,7 @@
     path: "{{ sudoers_backup_path }}"
     mode: "0755"
   delegate_to: "localhost"
-  become: "{{ sudoers_backup_become | default(True) | bool }}"
+#  become: "{{ sudoers_backup_become | default(True) | bool }}"
   connection: "local"
   when:
     - "sudoers_backup | bool"
@@ -66,7 +58,7 @@
     fail_on_missing: False
     src: "{{ item }}"
   with_items: "{{ sudoers_file_paths }}"
-  become: True
+#  become: True
   when:
     - "sudoers_backup | bool"
     - "sudoers_backup_path != ''"
@@ -78,11 +70,11 @@
     src: "sudoers.j2"
     dest: "{{ item.path }}"
     owner: "root"
-    group: "{{ sudoers_root_group }}"
+    group: "root"
     mode: "0440"
     validate: '{{ sudoers_visudo_path }} -cf %s'
   with_items: "{{ sudoers_files }}"
-  become: True
+#  become: True
   loop_control:
     label: "{{ item.path }}"
   when: "item.path != '/etc/sudoers'"
@@ -92,11 +84,11 @@
     src: "sudoers.j2"
     dest: "/etc/sudoers"
     owner: "root"
-    group: "{{ sudoers_root_group }}"
+    group: "root"
     mode: "0440"
     validate: '{{ sudoers_visudo_path }} -cf %s'
   with_items: "{{ sudoers_files }}"
-  become: True
+# become: True
   loop_control:
     label: "{{ item.path }}"
   when:
@@ -130,7 +122,7 @@
         state: "absent"
       with_items: "{{ sudoers_unauthorized_files }}"
       when: "sudoers_unauthorized_files | length > 0"
-  become: True
+#  become: True
   when:
     - "sudoers_remove_unauthorized_included_files | bool"
     - "sudoers_include_dirs | length > 0"

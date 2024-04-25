@@ -3,7 +3,7 @@ sudoers_rewrite_default_sudoers_file: True
 sudoers_remove_unauthorized_included_files: False
 # backups occur on the ansible control node by fetching the remote files to prevent accidental inclusion in a includedir
 ## The default sudoers_backup_path will be relative to the playbook execution path
-sudoers_backup: True
+sudoers_backup: False
 sudoers_backup_path: "sudoers-backups"
 sudoers_backup_become: True
 sudoers_visudo_path: "/usr/sbin/visudo"
