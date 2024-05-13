@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: "Apply a RHEL7.6 Default /etc/sudoers configuration"
+- name: "Apply a RHEL Default /etc/sudoers configuration"
   hosts: "all"
   roles:
     - role: "sudo"
