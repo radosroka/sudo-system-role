@@ -7,10 +7,10 @@
       - path: "/etc/sudoers"
         user_specifications:
           - users:
-              - "root"
+            - "root"
             hosts:
-              - "xyz"
+              - "x"
             commands:
-              - "zyx"
+              - "/usr/bin/ls"
   roles:
     - role: "sudo"

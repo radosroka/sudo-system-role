@@ -14,8 +14,7 @@
 
 - name: "Set sudoer file paths variable"
   set_fact:
-    sudoers_file_paths: "{{ sudoers_files | selectattr('path', 'defined') |
-      map(attribute='path') | flatten }}"
+    sudoers_file_paths: "{{ sudoers_files | selectattr('path', 'defined') | map(attribute='path') | flatten }}"
 
 - name: "Display all sudoers include directories"
   debug:
@@ -37,31 +36,6 @@
   with_items: "{{ sudoers_include_dirs }}"
 #  become: True
   when: "sudoers_include_dirs | length > 0"
-
-# We want to pull the remote sudoer files to the ansible control node
-##  To prevent includedirs from accidentally activating backed up copies
-- name: "Ensure local backup directory exists"
-  file:
-    state: "directory"
-    path: "{{ sudoers_backup_path }}"
-    mode: "0755"
-  delegate_to: "localhost"
-#  become: "{{ sudoers_backup_become | default(True) | bool }}"
-  connection: "local"
-  when:
-    - "sudoers_backup | bool"
-    - "sudoers_backup_path != ''"
-
-- name: "Backup sudoers files"
-  fetch:
-    dest: "{{ sudoers_backup_path }}"
-    fail_on_missing: False
-    src: "{{ item }}"
-  with_items: "{{ sudoers_file_paths }}"
-#  become: True
-  when:
-    - "sudoers_backup | bool"
-    - "sudoers_backup_path != ''"
 
 # included files get created first, because if using #include <file>
 ##   visudo will not validate since the file does not exist yet (if new)
@@ -108,8 +82,7 @@
 
     - name: "Set unauthorized included sudoers files variable"
       set_fact:
-        sudoers_unauthorized_files: "{{ sudoers_existing_included_files | json_query('files[*].path') |
-            difference(sudoers_file_paths) }}"
+        sudoers_unauthorized_files: "{{ sudoers_existing_included_files['files'] |  selectattr('path', 'defined') |  map(attribute='path') | flatten | difference(sudoers_file_paths) }}"
 
     - name: "Display unauthorized sudoers include files to be removed"
       debug:

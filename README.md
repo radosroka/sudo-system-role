@@ -20,20 +20,6 @@ Default `True` - if set to `True` the variable ensures the role will rewrite def
 
 Default `False` - if set to `True` the variable ensures the role will remove other config files from sudoers.d/ which are not handled by this role.
 
-
-### sudoers_backup
-
-Default `True` - if set to `True` the variable ensures the role will backup all sudo configuration files to backup directory `sudoers_backup_path`. 
-
-### sudoers_backup_path
-
-Default `sudoers-backup` - the name of directory placed in relative execution path.
-
-
-### sudoers_backup_become
-
-Default `True` - if set to `True` the variable ensures the role ...
-
 ### sudoers_visudo_path
 
 Default `/usr/bin/visudo` - path to visudo utility.
