@@ -75,25 +75,39 @@ SOFTWARE.
 <li><a href="#collection-requirements"
 id="toc-collection-requirements">Collection requirements</a></li>
 </ul></li>
-<li><a href="#role-variables" id="toc-role-variables">Role Variables</a>
+<li><a href="#role-variables" id="toc-role-variables">Role
+Variables</a></li>
+<li><a href="#sudo_sudoers_files-dictionary-fields"
+id="toc-sudo_sudoers_files-dictionary-fields">sudo_sudoers_files
+Dictionary Fields</a>
 <ul>
-<li><a href="#sudoers_rewrite_default_sudoers_file"
-id="toc-sudoers_rewrite_default_sudoers_file">sudoers_rewrite_default_sudoers_file</a></li>
-<li><a href="#sudoers_remove_unauthorized_included_files"
-id="toc-sudoers_remove_unauthorized_included_files">sudoers_remove_unauthorized_included_files</a></li>
-<li><a href="#sudoers_visudo_path"
-id="toc-sudoers_visudo_path">sudoers_visudo_path</a></li>
-<li><a href="#sudoers_files" id="toc-sudoers_files">sudoers_files</a>
+<li><a href="#sudo_sudoers_filesaliases-dictionary-fields"
+id="toc-sudo_sudoers_filesaliases-dictionary-fields">sudo_sudoers_files.aliases
+Dictionary Fields</a>
 <ul>
-<li><a href="#path" id="toc-path">path</a></li>
-<li><a href="#defaults" id="toc-defaults">defaults</a></li>
-<li><a href="#user_specifications"
-id="toc-user_specifications">user_specifications</a></li>
-<li><a href="#include_direcories"
-id="toc-include_direcories">include_direcories</a></li>
-<li><a href="#include_files"
-id="toc-include_files">include_files</a></li>
-<li><a href="#aliases" id="toc-aliases">aliases</a></li>
+<li><a href="#cmnd_alias-dictionary-fields"
+id="toc-cmnd_alias-dictionary-fields">cmnd_alias Dictionary
+Fields</a></li>
+<li><a href="#host_alias-dictionary-fields"
+id="toc-host_alias-dictionary-fields">host_alias Dictionary
+Fields</a></li>
+<li><a href="#runas_alias-dictionary-fields"
+id="toc-runas_alias-dictionary-fields">runas_alias Dictionary
+Fields</a></li>
+<li><a href="#user_alias-dictionary-fields"
+id="toc-user_alias-dictionary-fields">user_alias Dictionary
+Fields</a></li>
+</ul></li>
+<li><a href="#user_specifications-dictionary-fields"
+id="toc-user_specifications-dictionary-fields">user_specifications
+Dictionary Fields</a>
+<ul>
+<li><a href="#standard-user_specifications"
+id="toc-standard-user_specifications">Standard
+user_specifications</a></li>
+<li><a href="#default-override-user_specifications"
+id="toc-default-override-user_specifications">Default Override
+user_specifications</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#example-playbook" id="toc-example-playbook">Example
@@ -112,36 +126,359 @@ it up.</p>
 <h2 id="collection-requirements">Collection requirements</h2>
 <p>None.</p>
 <h1 id="role-variables">Role Variables</h1>
+<p>The defaults defined for this role are based on a default RHEL7.6
+<code>/etc/sudoers</code> configuration. Please check the defaults in <a
+href="defaults/main.yml"><code>defaults/main.yml</code></a> prior to
+running for OS compatibility.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Default Value</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sudo_rewrite_default_sudoers_file</td>
+<td>Use role default or user defined <code>sudoers_files</code>
+definition, replacing your distribution supplied
+<code>/etc/sudoers</code> file. Useful when attempting to deploy new
+configuration files to the <code>include_directories</code> and you do
+not wish to modify the <code>/etc/sudoers</code> file.</td>
+<td style="text-align: center;">True</td>
+<td style="text-align: center;">boolean</td>
+</tr>
+<tr class="even">
+<td>sudo_remove_unauthorized_included_files</td>
+<td><em><strong>Very Dangerous!</strong></em> Each existing sudoer file
+found in the <code>include_directories</code> dictionary which have not
+been defined in <code>sudoers_files</code> will be removed. This allows
+for enforcing a desired state.</td>
+<td style="text-align: center;">False</td>
+<td style="text-align: center;">boolean</td>
+</tr>
+<tr class="odd">
+<td>sudo_visudo_path</td>
+<td>Fully-qualified path to the <code>visudo</code> binary required for
+validation of sudoers configuration changes. Added for Operating System
+compatibility.</td>
+<td style="text-align: center;">"/usr/sbin/visudo"</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>sudo_files</td>
+<td>Definition of all your sudoers configurations</td>
+<td style="text-align: center;">see <a
+href="defaults/main.yml">defaults/main.yml</a></td>
+<td style="text-align: center;">list of dictionaries</td>
+</tr>
+</tbody>
+</table>
+<h1 id="sudo_sudoers_files-dictionary-fields">sudo_sudoers_files
+Dictionary Fields</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>path</td>
+<td>Where to deploy the configuration file to on the filesystem.</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>aliases</td>
+<td>Optional definition of <code>cmnd_alias</code>,
+<code>host_alias</code>, <code>runas_alias</code>, or
+<code>user_alias</code> items.</td>
+<td style="text-align: center;">dictionary</td>
+</tr>
+<tr class="odd">
+<td>defaults</td>
+<td>This allows you to define the defaults of your sudoers
+configuration. Default overrides can be perfomed via the <a
+href="#default-override-user_specifications"><code>user_specifications</code></a>
+key.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>include_files</td>
+<td>Optional specific files that you would like your configuration to
+include. This is a list of fully-qualified paths to include via the
+<code>#include</code> option of a sudoers configuration.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>include_directories</td>
+<td>Optional specific directories that you would like your
+configurations to include. This is a list of fully-qualified paths to
+directories to include via the <code>#includedir</code> option of a
+sudoers configuration.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>user_specifications</td>
+<td>List of user specifications and default overrides to apply to a
+sudoers file configuration.</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
 <h2
-id="sudoers_rewrite_default_sudoers_file">sudoers_rewrite_default_sudoers_file</h2>
-<p>Default <code>True</code> - if set to <code>True</code> the variable
-ensures the role will rewrite default sudoers file.</p>
-<h2
-id="sudoers_remove_unauthorized_included_files">sudoers_remove_unauthorized_included_files</h2>
-<p>Default <code>False</code> - if set to <code>True</code> the variable
-ensures the role will remove other config files from sudoers.d/ which
-are not handled by this role.</p>
-<h2 id="sudoers_visudo_path">sudoers_visudo_path</h2>
-<p>Default <code>/usr/bin/visudo</code> - path to visudo utility.</p>
-<h2 id="sudoers_files">sudoers_files</h2>
-<h3 id="path">path</h3>
-<h3 id="defaults">defaults</h3>
-<h4 id="secure_path">secure_path</h4>
-<h4 id="env_keep">env_keep</h4>
-<h3 id="user_specifications">user_specifications</h3>
-<h4 id="users">users</h4>
-<h5 id="hosts">hosts</h5>
-<h5 id="operators">operators</h5>
-<h5 id="commands">commands</h5>
-<h3 id="include_direcories">include_direcories</h3>
-<h3 id="include_files">include_files</h3>
-<h3 id="aliases">aliases</h3>
+id="sudo_sudoers_filesaliases-dictionary-fields">sudo_sudoers_files.aliases
+Dictionary Fields</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cmnd_alias</td>
+<td>List of command alias definitions.</td>
+<td style="text-align: center;">list of dictionaries</td>
+</tr>
+<tr class="even">
+<td>host_alias</td>
+<td>List of host alias definitions</td>
+<td style="text-align: center;">list of dictionaries</td>
+</tr>
+<tr class="odd">
+<td>runas_alias</td>
+<td>List of runas alias definitions</td>
+<td style="text-align: center;">list of dictionaries</td>
+</tr>
+<tr class="even">
+<td>user_alias</td>
+<td>List of user alias definitions</td>
+<td style="text-align: center;">list of dictionaries</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cmnd_alias-dictionary-fields">cmnd_alias Dictionary Fields</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>Name of the command alias.</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>commands</td>
+<td>List of commands to apply to the alias</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="host_alias-dictionary-fields">host_alias Dictionary Fields</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>Name of the host alias.</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>hosts</td>
+<td>List of hosts to apply to the alias</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="runas_alias-dictionary-fields">runas_alias Dictionary
+Fields</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>Name of the runas alias</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>users</td>
+<td>List of users to apply to the alias</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user_alias-dictionary-fields">user_alias Dictionary Fields</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>Name of the user_alias</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="even">
+<td>users</td>
+<td>List of users to apply to the alias</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
+<h2 id="user_specifications-dictionary-fields">user_specifications
+Dictionary Fields</h2>
+<p>This dictionary can be used to assign either user specifications or
+default overrides.</p>
+<h3 id="standard-user_specifications">Standard user_specifications</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>users</td>
+<td>List of users to apply the specification to. You can use a
+<code>user_alias</code> name as well as user names.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>hosts</td>
+<td>List of hosts to apply the specification to. You can use a defined
+<code>host_alias</code> name as well as host names.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>operators</td>
+<td>List of operators to apply the specification to. You can use a
+defined <code>runas_alias</code> name as well as user names.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>selinux_role</td>
+<td>Optional selinux role to apply to the specification</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>selinux_type</td>
+<td>Optional selinux type to apply to the specification</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>solaris_privs</td>
+<td>Optional Solaris privset to apply to the specification</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>solaris_limitprivs</td>
+<td>Optional Solaris privset to apply to the specification</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>tags</td>
+<td>Optional list of tags to apply to the specification.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>commands</td>
+<td>List of commands to apply the specification to. You can use a
+defined <code>cmnd_alias</code> name as well as commands.</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="default-override-user_specifications">Default Override
+user_specifications</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable Name</th>
+<th>Description</th>
+<th style="text-align: center;">Variable Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>defaults</td>
+<td>List of defaults to override from the main configuration</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>type</td>
+<td>Type of default to override, this affects the operator in the
+configuration ( host -&gt; <code>@</code>, user -&gt; <code>:</code>,
+command -&gt; <code>!</code>, and runas -&gt; <code>&gt;</code>). The
+type field can be one of the following values: <code>command</code>,
+<code>host</code>, <code>runas</code>, or <code>user</code>.</td>
+<td style="text-align: center;">string</td>
+</tr>
+<tr class="odd">
+<td>commands</td>
+<td>Use when <code>type: "command"</code>. List of
+<code>cmnd_alias</code> names as well as commands to override specific
+default values.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>hosts</td>
+<td>Use when <code>type: "host"</code>. List of <code>host_alias</code>
+names as well as individual host names to override specific default
+values.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="odd">
+<td>operators</td>
+<td>Use when <code>type: "runas"</code>. List of
+<code>runas_alias</code> names as well as individual user names to
+override specific default values.</td>
+<td style="text-align: center;">list</td>
+</tr>
+<tr class="even">
+<td>users</td>
+<td>Use when <code>type: "user"</code>. List of <code>user_alias</code>
+names as well as individual user names to override specific default
+values.</td>
+<td style="text-align: center;">list</td>
+</tr>
+</tbody>
+</table>
 <h1 id="example-playbook">Example Playbook</h1>
 <pre><code>---
 - name: Example sudo role invocation
   hosts: all
   roles:
-    - fapolicyd</code></pre>
+    - linux-system-role.sudo</code></pre>
 <h1 id="license">License</h1>
 <p>MIT</p>
 <h1 id="author-information">Author Information</h1>
