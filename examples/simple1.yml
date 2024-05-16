@@ -3,4 +3,4 @@
 - name: "Apply a RHEL Default /etc/sudoers configuration"
   hosts: "all"
   roles:
-    - role: "sudo"
+    - role: "linux-system-roles.sudo"

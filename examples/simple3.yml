@@ -66,4 +66,4 @@
     include_directories:
       - "/etc/sudoers.d"
   roles:
-    - role: "sudo"
+    - role: "linux-system-roles.sudo"

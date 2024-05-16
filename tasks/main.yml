@@ -3,17 +3,21 @@
   package:
     name: "sudo"
     state: "present"
-  retries: "3"
+  retries: 3
   register: "sudo_installed"
   until: "sudo_installed is succeeded"
 
 - name: "Set include directories variable"
   set_fact:
-    sudo_include_dirs: "{{ sudo_sudoers_files | selectattr('include_directories', 'defined') | map(attribute='include_directories') | flatten }}"
+    sudo_include_dirs: "{{ sudo_sudoers_files
+    | selectattr('include_directories', 'defined')
+    | map(attribute='include_directories') | flatten }}"
 
 - name: "Set sudoer file paths variable"
   set_fact:
-    sudo_file_paths: "{{ sudo_sudoers_files | selectattr('path', 'defined') | map(attribute='path') | flatten }}"
+    sudo_file_paths: "{{ sudo_sudoers_files
+    | selectattr('path', 'defined')
+    | map(attribute='path') | flatten }}"
 
 - name: "Display all sudoers include directories"
   debug:
@@ -65,6 +69,9 @@
     - "sudo_rewrite_default_sudoers_file | bool"
 
 - name: "Remove unauthorized included sudoer files"
+  when:
+    - "sudo_remove_unauthorized_included_files | bool"
+    - "sudo_include_dirs | length > 0"
   block:
     - name: "Search for sudoer files in included directories"
       find:
@@ -76,7 +83,9 @@
 
     - name: "Set unauthorized included sudoers files variable"
       set_fact:
-        sudo_unauthorized_files: "{{ sudo_existing_included_files['files'] |  selectattr('path', 'defined') |  map(attribute='path') | flatten | difference(sudoers_file_paths) }}"
+        sudo_unauthorized_files: "{{ sudo_existing_included_files['files']
+        | selectattr('path', 'defined') | map(attribute='path')
+        | flatten | difference(sudoers_file_paths) }}"
 
     - name: "Display unauthorized sudoers include files to be removed"
       debug:
@@ -89,6 +98,3 @@
         state: "absent"
       with_items: "{{ sudo_unauthorized_files }}"
       when: "sudo_unauthorized_files | length > 0"
-  when:
-    - "sudo_remove_unauthorized_included_files | bool"
-    - "sudo_include_dirs | length > 0"

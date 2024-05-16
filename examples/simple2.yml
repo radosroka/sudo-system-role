@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: "Apply a RHEL Default /etc/sudoers configuration"
+- name: "Apply custom /etc/sudoers configuration"
   hosts: "all"
   vars:
     sudoers_files:
@@ -13,4 +13,4 @@
             commands:
               - "/usr/bin/ls"
   roles:
-    - role: "sudo"
+    - role: "linux-system-roles.sudo"

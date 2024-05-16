@@ -1,9 +1,11 @@
+# SPDX-License-Identifier: MIT
+---
 - name: "Apply a multi-file sudoers configuration"
   hosts: "all"
   tasks:
     - name: "Configure /etc/sudoers and included files"
       include_role:
-        name: "sudo"
+        name: "linux-system-roles.sudo"
       vars:
         sudoers_rewrite_default_sudoers_file: True
         sudoers_remove_unauthorized_included_files: True
@@ -15,7 +17,7 @@
               - "!visiblepw"
               - "always_set_home"
               - "match_group_by_gid"
-              - "always_query_group_plugin" # maintains sudo pre-1.8.15 group behavior
+              - "always_query_group_plugin"
               - "env_reset"
               - secure_path:
                   - "/sbin"
