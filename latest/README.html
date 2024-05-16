@@ -474,11 +474,269 @@ values.</td>
 </tbody>
 </table>
 <h1 id="example-playbook">Example Playbook</h1>
-<pre><code>---
-- name: Example sudo role invocation
-  hosts: all
+<pre><code># SPDX-License-Identifier: MIT
+---
+- name: &quot;Apply a RHEL Default /etc/sudoers configuration&quot;
+  hosts: &quot;all&quot;
   roles:
-    - linux-system-role.sudo</code></pre>
+    - role: &quot;linux-system-roles.sudo&quot;</code></pre>
+<pre><code># SPDX-License-Identifier: MIT
+---
+- name: &quot;Apply custom /etc/sudoers configuration&quot;
+  hosts: &quot;all&quot;
+  vars:
+    sudoers_files:
+      - path: &quot;/etc/sudoers&quot;
+        user_specifications:
+          - users:
+            - &quot;root&quot;
+            hosts:
+              - &quot;x&quot;
+            commands:
+              - &quot;/usr/bin/ls&quot;
+  roles:
+    - role: &quot;linux-system-roles.sudo&quot;</code></pre>
+<pre><code># SPDX-License-Identifier: MIT
+---
+- name: &quot;Apply a RHEL Default /etc/sudoers configuration&quot;
+  hosts: &quot;all&quot;
+  vars:
+    sudoers_files:
+      - path: &quot;/etc/sudoers&quot;
+        defaults:
+          - &quot;!visiblepw&quot;
+          - &quot;always_set_home&quot;
+          - &quot;match_group_by_gid&quot;
+          - &quot;always_query_group_plugin&quot;
+          - &quot;env_reset&quot;
+          - secure_path:
+            - &quot;/sbin&quot;
+            - &quot;/bin&quot;
+            - &quot;/usr/sbin&quot;
+            - &quot;/usr/bin&quot;
+          - env_keep:
+            - &quot;COLORS&quot;
+            - &quot;DISPLAY&quot;
+            - &quot;HOSTNAME&quot;
+            - &quot;HISTSIZE&quot;
+            - &quot;KDEDIR&quot;
+            - &quot;LS_COLORS&quot;
+            - &quot;MAIL&quot;
+            - &quot;PS1&quot;
+            - &quot;PS2&quot;
+            - &quot;QTDIR&quot;
+            - &quot;USERNAME&quot;
+            - &quot;LANG&quot;
+            - &quot;LC_ADDRESS&quot;
+            - &quot;LC_CTYPE&quot;
+            - &quot;LC_COLLATE&quot;
+            - &quot;LC_IDENTIFICATION&quot;
+            - &quot;LC_MEASUREMENT&quot;
+            - &quot;LC_MESSAGES&quot;
+            - &quot;LC_MONETARY&quot;
+            - &quot;LC_NAME&quot;
+            - &quot;LC_NUMERIC&quot;
+            - &quot;LC_PAPER&quot;
+            - &quot;LC_TELEPHONE&quot;
+            - &quot;LC_TIME&quot;
+            - &quot;LC_ALL&quot;
+            - &quot;LANGUAGE&quot;
+            - &quot;LINGUAS&quot;
+            - &quot;_XKB_CHARSET&quot;
+            - &quot;XAUTHORITY&quot;
+    user_specifications:
+      - users:
+          - &quot;root&quot;
+        hosts:
+          - &quot;ALL&quot;
+        operators:
+          - &quot;ALL&quot;
+        commands:
+          - &quot;ALL&quot;
+      - users:
+          - &quot;%wheel&quot;
+        hosts:
+          - &quot;ALL&quot;
+        operators:
+          - &quot;ALL&quot;
+        commands:
+          - &quot;ALL&quot;
+    include_directories:
+      - &quot;/etc/sudoers.d&quot;
+  roles:
+    - role: &quot;linux-system-roles.sudo&quot;</code></pre>
+<pre><code># SPDX-License-Identifier: MIT
+---
+- name: &quot;Apply a RHEL Default /etc/sudoers configuration&quot;
+  hosts: &quot;all&quot;
+  vars:
+    sudoers_files:
+      - path: &quot;/etc/sudoers&quot;
+        defaults:
+          - &quot;!visiblepw&quot;
+          - &quot;always_set_home&quot;
+          - &quot;match_group_by_gid&quot;
+          - &quot;always_query_group_plugin&quot;
+          - &quot;env_reset&quot;
+          - secure_path:
+            - &quot;/sbin&quot;
+            - &quot;/bin&quot;
+            - &quot;/usr/sbin&quot;
+            - &quot;/usr/bin&quot;
+          - env_keep:
+            - &quot;COLORS&quot;
+            - &quot;DISPLAY&quot;
+            - &quot;HOSTNAME&quot;
+            - &quot;HISTSIZE&quot;
+            - &quot;KDEDIR&quot;
+            - &quot;LS_COLORS&quot;
+            - &quot;MAIL&quot;
+            - &quot;PS1&quot;
+            - &quot;PS2&quot;
+            - &quot;QTDIR&quot;
+            - &quot;USERNAME&quot;
+            - &quot;LANG&quot;
+            - &quot;LC_ADDRESS&quot;
+            - &quot;LC_CTYPE&quot;
+            - &quot;LC_COLLATE&quot;
+            - &quot;LC_IDENTIFICATION&quot;
+            - &quot;LC_MEASUREMENT&quot;
+            - &quot;LC_MESSAGES&quot;
+            - &quot;LC_MONETARY&quot;
+            - &quot;LC_NAME&quot;
+            - &quot;LC_NUMERIC&quot;
+            - &quot;LC_PAPER&quot;
+            - &quot;LC_TELEPHONE&quot;
+            - &quot;LC_TIME&quot;
+            - &quot;LC_ALL&quot;
+            - &quot;LANGUAGE&quot;
+            - &quot;LINGUAS&quot;
+            - &quot;_XKB_CHARSET&quot;
+            - &quot;XAUTHORITY&quot;
+    user_specifications:
+      - users:
+          - &quot;root&quot;
+        hosts:
+          - &quot;ALL&quot;
+        operators:
+          - &quot;ALL&quot;
+        commands:
+          - &quot;ALL&quot;
+      - users:
+          - &quot;%wheel&quot;
+        hosts:
+          - &quot;ALL&quot;
+        operators:
+          - &quot;ALL&quot;
+        commands:
+          - &quot;ALL&quot;
+    include_directories:
+      - &quot;/etc/sudoers.d&quot;
+  roles:
+    - role: &quot;linux-system-roles.sudo&quot;
+
+rsroka at Maverick in ~/Work/sudo-system-role/examples (main●●)
+$ \cat simple4.yml
+# SPDX-License-Identifier: MIT
+---
+- name: &quot;Apply a multi-file sudoers configuration&quot;
+  hosts: &quot;all&quot;
+  tasks:
+    - name: &quot;Configure /etc/sudoers and included files&quot;
+      include_role:
+        name: &quot;linux-system-roles.sudo&quot;
+      vars:
+        sudoers_rewrite_default_sudoers_file: True
+        sudoers_remove_unauthorized_included_files: True
+        sudoers_backup: True
+        sudoers_backup_path: &quot;sudoers-backups&quot;
+        sudoers_files:
+          - path: &quot;/etc/sudoers&quot;
+            defaults:
+              - &quot;!visiblepw&quot;
+              - &quot;always_set_home&quot;
+              - &quot;match_group_by_gid&quot;
+              - &quot;always_query_group_plugin&quot;
+              - &quot;env_reset&quot;
+              - secure_path:
+                  - &quot;/sbin&quot;
+                  - &quot;/bin&quot;
+                  - &quot;/usr/sbin&quot;
+                  - &quot;/usr/bin&quot;
+              - env_keep:
+                  - &quot;COLORS&quot;
+                  - &quot;DISPLAY&quot;
+                  - &quot;HOSTNAME&quot;
+                  - &quot;HISTSIZE&quot;
+                  - &quot;KDEDIR&quot;
+                  - &quot;LS_COLORS&quot;
+                  - &quot;MAIL&quot;
+                  - &quot;PS1&quot;
+                  - &quot;PS2&quot;
+                  - &quot;QTDIR&quot;
+                  - &quot;USERNAME&quot;
+                  - &quot;LANG&quot;
+                  - &quot;LC_ADDRESS&quot;
+                  - &quot;LC_CTYPE&quot;
+                  - &quot;LC_COLLATE&quot;
+                  - &quot;LC_IDENTIFICATION&quot;
+                  - &quot;LC_MEASUREMENT&quot;
+                  - &quot;LC_MESSAGES&quot;
+                  - &quot;LC_MONETARY&quot;
+                  - &quot;LC_NAME&quot;
+                  - &quot;LC_NUMERIC&quot;
+                  - &quot;LC_PAPER&quot;
+                  - &quot;LC_TELEPHONE&quot;
+                  - &quot;LC_TIME&quot;
+                  - &quot;LC_ALL&quot;
+                  - &quot;LANGUAGE&quot;
+                  - &quot;LINGUAS&quot;
+                  - &quot;_XKB_CHARSET&quot;
+                  - &quot;XAUTHORITY&quot;
+            user_specifications:
+              - users:
+                  - &quot;root&quot;
+                hosts:
+                  - &quot;ALL&quot;
+                operators:
+                  - &quot;ALL&quot;
+                commands:
+                  - &quot;ALL&quot;
+              - users:
+                  - &quot;%wheel&quot;
+                hosts:
+                  - &quot;ALL&quot;
+                operators:
+                  - &quot;ALL&quot;
+                commands:
+                  - &quot;ALL&quot;
+            include_directories:
+              - &quot;/etc/sudoers.d&quot;
+            aliases:
+              cmnd_alias:
+                - name: &quot;PING&quot;
+                  commands:
+                    - &quot;/bin/ping&quot;
+              user_alias:
+                - name: &quot;PINGERS&quot;
+                  users:
+                    - &quot;ahuffman&quot;
+          - path: &quot;/etc/sudoers.d/pingers&quot;
+            user_specifications:
+              - type: &quot;user&quot;
+                defaults:
+                  - &quot;!requiretty&quot;
+                users:
+                  - &quot;PINGERS&quot;
+          - path: &quot;/etc/sudoers.d/root&quot;
+            defaults:
+              - &quot;syslog=auth&quot;
+            user_specifications:
+              - type: &quot;runas&quot;
+                defaults:
+                  - &quot;!set_logname&quot;
+                operators:
+                  - &quot;root&quot;</code></pre>
 <h1 id="license">License</h1>
 <p>MIT</p>
 <h1 id="author-information">Author Information</h1>
